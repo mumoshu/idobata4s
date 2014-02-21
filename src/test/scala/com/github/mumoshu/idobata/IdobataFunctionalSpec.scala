@@ -11,10 +11,6 @@ class IdobataFunctionalSpec extends FlatSpec with Matchers with ScalaFutures wit
   implicit override val patienceConfig =
     PatienceConfig(timeout =  Span(5, Seconds), interval = Span(1, Millis))
 
-  private val roomId = 1518
-  private val userId = 1877
-  private val botId = 1880
-
   "A Idobata" should "send messages to rooms" in {
 
     val idobata = Idobata()
@@ -23,15 +19,26 @@ class IdobataFunctionalSpec extends FlatSpec with Matchers with ScalaFutures wit
       logger.info(response.toString)
     }
 
-    test(_.getRooms("mumoshu", "testroom"))
+    val roomId = 1518
+    val userId = 1877
+    val botId = 1880
+    val organizationSlug = "mumoshu"
+    val messageId = 1513410
+    val roomName = "testroom"
+
+    test(_.getRooms(organizationSlug, roomName))
     test(_.getRoom(roomId))
     test(_.getRooms(Seq(roomId)))
     test(_.sendMessage(roomId, "Hi!"))
-    test(_.getMessages(roomId, olderThan = 1513410))
-    test(_.getMessages(Seq(1513410)))
+    test(_.getMessages(roomId, olderThan = messageId))
+    test(_.getMessages(Seq(messageId)))
     test(_.getUser(userId))
     test(_.getUsers(Seq(userId)))
+    test(_.getUsers)
     test(_.getBots(Seq(botId)))
+    test(_.getBots)
+    test(_.getOrganizations)
+    test(_.getOrganizations(organizationSlug))
   }
 
 }

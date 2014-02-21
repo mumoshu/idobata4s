@@ -23,6 +23,7 @@ case class Idobata(apiToken: String = "28df745bf9e7ea110de8e02d0d641e44") {
   val roomsRequest = url(s"${IdobataURL}/api/rooms").setHeaders(headers)
   val usersRequest = url(s"${IdobataURL}/api/users").setHeaders(headers)
   val botsRequest = url(s"${IdobataURL}/api/bots").setHeaders(headers)
+  val organizationsRequest = url(s"${IdobataURL}/api/organizations").setHeaders(headers)
 
   def apiSeedAsString: Future[String] = Http(apiSeedRequest OK as.String)
   def apiSeedAsJson: Future[JValue] = Http(apiSeedRequest OK as.json4s.Json)
@@ -53,6 +54,12 @@ case class Idobata(apiToken: String = "28df745bf9e7ea110de8e02d0d641e44") {
     Http(messagesRequest << Map("message[room_id]" -> roomId.toString, "message[source]" -> source) OK as.String)
   }
 
+  def getOrganizations =
+    Http(organizationsRequest OK as.String)
+
+  def getOrganizations(organizationSlug: String) =
+    Http(organizationsRequest <<? Map("organization_slug" -> organizationSlug) OK as.String)
+
   def getRooms(organizationSlug: String, roomName: String) = {
     Http(roomsRequest <<? Map("organization_slug" -> organizationSlug, "room_name" -> roomName) OK as.String)
   }
@@ -72,8 +79,14 @@ case class Idobata(apiToken: String = "28df745bf9e7ea110de8e02d0d641e44") {
   def getUsers(ids: Traversable[ID]) =
     Http(usersRequest <<? Map("ids[]" -> ids.mkString(",")) OK as.String)
 
+  def getUsers =
+    Http(usersRequest OK as.String)
+
   def getUser(id: ID) =
     Http(usersRequest / id OK as.String)
+
+  def getBots =
+    Http(botsRequest OK as.String)
 
   def getBots(ids: Traversable[ID]) =
     Http(botsRequest <<? Map("ids[]" -> ids.mkString(",")) OK as.String)
